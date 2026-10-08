@@ -270,31 +270,15 @@ try {
             $inet2 = Test-Inet
             Log ("STEP4 inet (direct, TUN off): " + $(if ($inet2) { 'OK' } else { 'FAIL' }))
 
-            # STEP 5: re-enable TUN (best effort - hotspot already works without it)
-            Log 'STEP5 re-enable TUN ...'
-            try {
-                if (Set-Tun -On $true) {
-                    $tunWeTurnedOff = $false
-                    Start-Sleep -Seconds 5
-                    $inet3 = Test-Inet -Retries 3 -GapSec 4
-                    if ($inet3) {
-                        Log 'STEP5 ok: TUN back on, inet OK'
-                    } else {
-                        Log 'REVERT: inet dead after TUN re-enable - disabling TUN again ...'
-                        [void](Set-Tun -On $false)
-                        Start-Sleep -Seconds 6
-                        if (Test-Inet -Retries 3 -GapSec 4) {
-                            Log 'FINAL: hotspot ON + direct net OK, TUN left OFF - re-enable via Clash GUI later'
-                        } else {
-                            Log 'CRITICAL: inet still dead after TUN off - reboot may be required'
-                        }
-                    }
-                } else {
-                    Log 'STEP5 warn: TUN api failed (hotspot stays ON, net on direct path)'
-                }
-            } catch {
-                Log ('STEP5 warn: ' + $_.Exception.Message + ' (hotspot stays ON)')
-            }
+            # STEP 5: TUN stays OFF while the hotspot is ON. TUN x hotspot are
+            # mutually exclusive (both directions tested to break networking),
+            # and the conflict can strike MINUTES after TUN comes back - so a
+            # short self-check would be a gamble. No auto-restore, ever.
+            # Need a proxy while sharing? Use Clash system-proxy mode.
+            $tunWeTurnedOff = $false
+            Log 'STEP5 done: TUN stays OFF while hotspot is ON (mutually exclusive - no auto-restore)'
+            Log 'FINAL: hotspot ON + TUN OFF + direct net OK - need a proxy? use Clash system-proxy mode'
+            Log 'HINT: re-enable TUN in Clash after running the stop action (hotspot off)'
         }
     }
     elseif ($Action -eq 'stop') {

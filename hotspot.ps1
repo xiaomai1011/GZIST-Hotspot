@@ -92,9 +92,9 @@ function Invoke-MihomoApi {
 }
 
 function Get-TunEnabled {
-    $r = Invoke-MihomoApi -Method 'GET' -Path '/configs'
-    if ($r.StatusLine -notmatch '200') { return $null }
     try {
+        $r = Invoke-MihomoApi -Method 'GET' -Path '/configs'
+        if ($r.StatusLine -notmatch '200') { return $null }
         $json = $r.Body | ConvertFrom-Json
         return [bool]$json.tun.enable
     } catch { return $null }
@@ -102,9 +102,11 @@ function Get-TunEnabled {
 
 function Set-Tun {
     param([bool]$On)
-    $body = '{"tun":{"enable":' + $(if ($On) { 'true' } else { 'false' }) + '}}'
-    $r = Invoke-MihomoApi -Method 'PATCH' -Path '/configs' -Body $body
-    return ($r.StatusLine -match '20[04]')
+    try {
+        $body = '{"tun":{"enable":' + $(if ($On) { 'true' } else { 'false' }) + '}}'
+        $r = Invoke-MihomoApi -Method 'PATCH' -Path '/configs' -Body $body
+        return ($r.StatusLine -match '20[04]')
+    } catch { return $false }
 }
 
 function Test-Inet {

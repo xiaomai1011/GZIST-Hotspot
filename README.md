@@ -86,7 +86,14 @@ Wi-Fi Direct 客户端 : 支持
 
 ## 快速开始
 
-1. **改密码**：用记事本打开 `hotspot.ps1`，编辑开头的 `$Ssid`（热点名）和 `$Passkey`（密码，至少 8 位）两行，改成自己的（默认 `xiaomai-AP` / `wifi12345` 只是占位）
+1. **改密码**：在脚本同目录用记事本新建 `hotspot_config.json`（UTF-8），内容两行即可：
+   ```json
+   {
+     "Ssid": "我的热点名",
+     "Passkey": "我的密码至少8位"
+   }
+   ```
+   不建此文件则用默认 `xiaomai-AP` / `wifi12345`。此文件已被 `.gitignore` 排除——**你的真实密码永远不会被提交到 GitHub**，以后 `git pull` 更新脚本也不会丢配置
 2. 确认主机有线网能上网
 3. 双击 **`开热点.bat`**，等 1~2 分钟，看到 `STEP3 result: state=On OK` 即成功
 4. 手机 / 笔记本搜到热点名，连上即可上网

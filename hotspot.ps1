@@ -1,4 +1,6 @@
-# USB-Hotspot controller for UGREEN CM496 (RTL8811CU) on wired networks.
+# GZIST-Hotspot: wired-to-wifi hotspot controller for Windows.
+# Works on any computer (desktop or laptop) with an Ethernet uplink and a
+# Wi-Fi-Direct-capable WLAN card.
 # Actions: status | start | stop
 # Designed to avoid the ICS x Clash-TUN conflict: TUN is disabled before
 # StartTethering and re-enabled after the hotspot is stable, with inet
@@ -8,6 +10,19 @@ param(
     [string]$Ssid = 'xiaomai-AP',
     [string]$Passkey = 'wifi12345'
 )
+# Optional local config: hotspot_config.json next to this script (gitignored).
+# Keys: Ssid, Passkey. Keeps your real password out of git and survives git pull.
+$cfgLocal = Join-Path $PSScriptRoot 'hotspot_config.json'
+if (Test-Path $cfgLocal) {
+    try {
+        $j = Get-Content $cfgLocal -Raw -Encoding UTF8 | ConvertFrom-Json
+        if ($j.Ssid) { $Ssid = [string]$j.Ssid }
+        if ($j.Passkey) { $Passkey = [string]$j.Passkey }
+        Write-Host ('[config] loaded hotspot_config.json (Ssid=' + $Ssid + ')')
+    } catch {
+        Write-Host 'WARN: hotspot_config.json exists but is unreadable - using built-in defaults'
+    }
+}
 $ErrorActionPreference = 'Stop'
 $report = New-Object System.Collections.Generic.List[string]
 function Log($m) {

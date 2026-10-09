@@ -10,10 +10,10 @@ import (
 	"github.com/xiaomai1011/GZIST-Hotspot/internal/hotspot"
 )
 
-// The look follows BanG Dream! It's MyGO!!!!!: the band's blue, the five
-// members' colors, a 迷星 for the status and 灯's notebook for the log.
+// The look follows BanG Dream! It's MyGO!!!!! in Rana's green: the five
+// members' colors, a 迷星 for the status and 乐奈的吉他盒 for the log.
 var (
-	colBand   = ui.Hex("#3388BB")
+	colBand   = ui.Hex("#4CAF6D") // Rana's green, deepened for contrast
 	colTomori = ui.Hex("#77BBDD")
 	colAnon   = ui.Hex("#FF8899")
 	colRana   = ui.Hex("#77DD77")
@@ -85,18 +85,18 @@ func describe(st hotspot.State) status {
 func applyTheme(c *ui.Context) *ui.Theme {
 	t := *c.Theme()
 	if t.Dark {
-		t.Background = ui.Hex("#0F151E")
-		t.Surface, t.SurfaceHover, t.SurfacePressed = ui.Hex("#1D2733"), ui.Hex("#253242"), ui.Hex("#2D3C4F")
-		t.Border = ui.Hex("#2C394A")
-		t.Text, t.TextMuted = ui.Hex("#E7EEF6"), ui.Hex("#8E9CAF")
-		t.Accent, t.AccentHover, t.AccentPressed = ui.Hex("#4A9FD3"), ui.Hex("#66B2E0"), ui.Hex("#3388BB")
-		t.Selection, t.Focus = colBand.Alpha(0.45), colTomori.Alpha(0.6)
+		t.Background = ui.Hex("#0F1A14")
+		t.Surface, t.SurfaceHover, t.SurfacePressed = ui.Hex("#16281D"), ui.Hex("#1D3325"), ui.Hex("#24402E")
+		t.Border = ui.Hex("#26402F")
+		t.Text, t.TextMuted = ui.Hex("#E7F6EC"), ui.Hex("#8FAF9C")
+		t.Accent, t.AccentHover, t.AccentPressed = ui.Hex("#4CAF6D"), ui.Hex("#66D08E"), ui.Hex("#3B8F55")
+		t.Selection, t.Focus = colBand.Alpha(0.45), colRana.Alpha(0.6)
 	} else {
-		t.Background = ui.Hex("#EEF4F9")
-		t.Surface, t.SurfaceHover, t.SurfacePressed = ui.Hex("#F3F7FA"), ui.Hex("#E6EEF5"), ui.Hex("#D9E5EF")
-		t.Border = ui.Hex("#D3DFE9")
-		t.Text, t.TextMuted = ui.Hex("#1E2A38"), ui.Hex("#687789")
-		t.Accent, t.AccentHover, t.AccentPressed = colBand, ui.Hex("#2B79A8"), ui.Hex("#236890")
+		t.Background = ui.Hex("#EEF9F1")
+		t.Surface, t.SurfaceHover, t.SurfacePressed = ui.Hex("#F3FBF6"), ui.Hex("#E5F5EC"), ui.Hex("#D8EDDF")
+		t.Border = ui.Hex("#CBE3D4")
+		t.Text, t.TextMuted = ui.Hex("#1A2E22"), ui.Hex("#63806E")
+		t.Accent, t.AccentHover, t.AccentPressed = colBand, ui.Hex("#2E8B57"), ui.Hex("#246B3D")
 		t.Selection, t.Focus = colBand.Alpha(0.25), colBand.Alpha(0.5)
 	}
 	t.AccentText = ui.Hex("#FFFFFF")
@@ -107,7 +107,7 @@ func applyTheme(c *ui.Context) *ui.Theme {
 
 func cardBG(t *ui.Theme) ui.Color {
 	if t.Dark {
-		return ui.Hex("#161F2A")
+		return ui.Hex("#122218")
 	}
 	return ui.Hex("#FFFFFF")
 }
@@ -181,9 +181,9 @@ func (m *model) header(c *ui.Context, t *ui.Theme) {
 
 func headerColors(t *ui.Theme) (ui.Color, ui.Color, float32) {
 	if t.Dark {
-		return ui.Hex("#1E5A82"), ui.Hex("#2F7DAE"), 120
+		return ui.Hex("#1F6B40"), ui.Hex("#3B9B55"), 120
 	}
-	return colBand, ui.Hex("#5FA9D6"), 120
+	return colBand, ui.Hex("#7FD9A0"), 120
 }
 
 func (m *model) statusCard(c *ui.Context, t *ui.Theme, s status) {
@@ -344,7 +344,7 @@ func (m *model) logCard(c *ui.Context, t *ui.Theme) {
 	card(c, t).Children(func() {
 		ui.Row(c).Gap(8).AlignItems(ui.Center).Children(func() {
 			ui.Box(c).Size(8, 8).Radius(4).Background(colRana)
-			ui.Text(c, "灯的笔记本").FontSize(13).Bold().Grow(1)
+			ui.Text(c, "乐奈的吉他盒").FontSize(13).Bold().Grow(1)
 			if m.act.OpenLogs != nil && ui.Button(c, "日志文件").FontSize(12).Clicked() {
 				m.act.OpenLogs()
 			}

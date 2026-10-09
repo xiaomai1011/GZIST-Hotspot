@@ -168,28 +168,30 @@ func encode(img image.Image) []byte {
 }
 
 // AppIcon draws the 1024² application icon: a white 迷星 with Wi-Fi waves
-// over the band's blue, with the five members' colors beneath it.
+// over green (Rana's color, matching the tray), with the five members'
+// colors beneath it. Green so the app reads apart from the blue-star app.
 func AppIcon() []byte {
 	const W = 1024
 	r := newRaster(W)
 	// macOS-style icon grid: 824² body with a little room around it.
-	r.fill(roundRect(100, 100, 824, 824, 185), gradient{Band, Tomori, W})
+	r.fill(roundRect(100, 100, 824, 824, 185),
+		gradient{color.RGBA{0x77, 0xDD, 0x77, 0xff}, color.RGBA{0x2E, 0x8B, 0x57, 0xff}, W})
 	// faint sparkles
 	white := image.NewUniform(color.NRGBA{255, 255, 255, 0x66})
 	for _, s := range [][3]float64{{250, 260, 34}, {790, 230, 26}, {800, 640, 20}, {230, 600, 18}} {
 		r.fill(poly(StarPoints(s[0], s[1], s[2], 0.42, 0)), white)
 	}
 	// soft shadow, then the star
-	r.fill(poly(StarPoints(512, 470, 255, 0.48, -8)), image.NewUniform(color.NRGBA{0x10, 0x3a, 0x5a, 0x48}))
+	r.fill(poly(StarPoints(512, 470, 255, 0.48, -8)), image.NewUniform(color.NRGBA{0x0e, 0x33, 0x1e, 0x48}))
 	r.fill(poly(StarPoints(512, 452, 255, 0.48, -8)), image.NewUniform(color.RGBA{255, 255, 255, 255}))
-	// Wi-Fi waves above the star, in the band's blue
+	// Wi-Fi waves above the star
 	waves := image.NewUniform(color.NRGBA{255, 255, 255, 0xe6})
 	wifiWaves(r, 512, 330, 150, 100, 30, waves)
 	// five members
 	for i, c := range Members {
 		x := 512 + float64(i-2)*92
 		y := 790 - 22*math.Cos(float64(i-2)*0.6)
-		r.fill(circle(x, y+4, 34), image.NewUniform(color.NRGBA{0x10, 0x3a, 0x5a, 0x48}))
+		r.fill(circle(x, y+4, 34), image.NewUniform(color.NRGBA{0x0e, 0x33, 0x1e, 0x48}))
 		r.fill(circle(x, y, 34), image.NewUniform(color.RGBA{255, 255, 255, 255}))
 		r.fill(circle(x, y, 26), image.NewUniform(c))
 	}

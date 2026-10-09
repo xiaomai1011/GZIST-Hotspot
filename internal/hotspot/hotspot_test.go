@@ -249,6 +249,29 @@ func TestStopWhenNotRunning(t *testing.T) {
 	assertLogged(t, *logs, "无需关闭")
 }
 
+func TestStopUnknownStateSettlesOff(t *testing.T) {
+	// A stale On readout leads to StopWait; the state machine then
+	// settles to Unknown instead of Off. That is still "not running":
+	// no error, phase Off.
+	d := &fakeDeps{tun: TunOn}
+	m, logs, _ := newManager(d)
+	info := upInfo()
+	info.State = "On"
+	eng(m).info = info
+	eng(m).stopVerdict = Verdict{OK: true, State: "Unknown"}
+
+	m.stop(context.Background())
+
+	if eng(m).stopWait != 1 {
+		t.Fatalf("stopWait %d", eng(m).stopWait)
+	}
+	st := m.State()
+	if st.Phase != Off || st.LastError != "" {
+		t.Fatalf("phase %v err %q", st.Phase, st.LastError)
+	}
+	assertLogged(t, *logs, "state=Unknown")
+}
+
 // --- refresh ---
 
 func TestRefreshAppliesDiscovery(t *testing.T) {

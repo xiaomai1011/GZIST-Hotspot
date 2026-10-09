@@ -35,18 +35,19 @@ type actions struct {
 // model is everything the main window shows. It is only touched on the
 // main thread.
 type model struct {
-	st       hotspot.State
-	ssid     string // text field
-	pass     string // text field, empty means unchanged
-	saved    string // ssid on disk
-	hasPass  bool
-	insecure bool
-	autostart bool
-	notice   string // result of the last save
-	logs     []string
-	logScroll ui.ScrollState
-	version  string
-	act      actions
+	st         hotspot.State
+	ssid       string // text field
+	pass       string // text field, always filled once a passkey exists
+	storedPass string // what is on disk; the field starts with it
+	saved      string // ssid on disk
+	hasPass    bool
+	insecure   bool
+	autostart  bool
+	notice     string // result of the last save
+	logs       []string
+	logScroll  ui.ScrollState
+	version    string
+	act        actions
 }
 
 // status describes the current phase in words and a member's color.
@@ -293,7 +294,7 @@ func (m *model) settingsCard(c *ui.Context, t *ui.Theme) {
 		ui.TextInput(c, &m.ssid).Label("热点名称").Placeholder("热点名称").FillWidth()
 		pw := ui.TextInput(c, &m.pass).Label("密码").Password().FillWidth()
 		if m.hasPass {
-			pw.Placeholder("已保存，留空则不修改")
+			pw.Placeholder("清空后保存 = 删除密码")
 		} else {
 			pw.Placeholder("至少 8 位")
 		}
@@ -304,7 +305,7 @@ func (m *model) settingsCard(c *ui.Context, t *ui.Theme) {
 				msg = "系统凭据管理器不可用，密码以明文保存在本机"
 			}
 			ui.Text(c, msg).FontSize(12).TextColor(t.TextMuted).Grow(1).Wrap()
-			dirty := m.ssid != m.saved || m.pass != ""
+			dirty := m.ssid != m.saved || m.pass != m.storedPass
 			if (ui.PrimaryButton(c, "保存").Disabled(!dirty || m.ssid == "").Clicked() || (submitted && dirty)) && m.ssid != "" {
 				m.act.Save(m.ssid, m.pass)
 			}

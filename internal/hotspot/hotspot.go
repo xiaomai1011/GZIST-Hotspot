@@ -472,7 +472,7 @@ func (m *Manager) stop(ctx context.Context) {
 	} else if v.State == "Off" {
 		m.log("关闭结果: state=Off OK")
 	} else {
-		m.logf("关闭结果: state=%s TIMEOUT", v.State)
+		m.logf("关闭结果: state=%s（状态机已离开 On）", v.State)
 	}
 	m.log("HINT: 需要代理时请在 Clash 界面手动开回 TUN")
 	switch v.State {
@@ -481,7 +481,10 @@ func (m *Manager) stop(ctx context.Context) {
 	case "On":
 		m.update(func(s *State) { s.Phase, s.LastError = On, "关闭超时：热点仍在运行" })
 	default:
-		m.update(func(s *State) { s.Phase = Idle })
+		// Unknown or odd states mean the hotspot is not actually running;
+		// the stale On readout that led here settles late. Show "off",
+		// not a mystery state.
+		m.finish(Off, "")
 	}
 	if v.State == "Off" && m.Notify != nil {
 		m.Notify("热点已关闭", "如需代理请记得在 Clash 开回 TUN")

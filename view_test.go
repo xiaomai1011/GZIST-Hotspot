@@ -146,7 +146,7 @@ func TestScreenshots(t *testing.T) {
 	}
 	shots := map[string]func(m *model){
 		"on": func(m *model) {
-			m.saved, m.hasPass = "xiaomai-AP", true
+			m.saved, m.hasPass, m.pass, m.storedPass = "xiaomai-AP", true, "xiaomai2026", "xiaomai2026"
 			m.st = hotspot.State{Phase: hotspot.On, HasAP: true, Clients: 2,
 				Adapter: "WLAN [MediaTek Wi-Fi 6E MT7922] (Up)", AdapterName: "WLAN",
 				Uplink: "以太网", SSID: "xiaomai-AP", Tun: hotspot.TunOff, InetKnown: true, InetOK: true}
@@ -154,14 +154,14 @@ func TestScreenshots(t *testing.T) {
 		},
 		"first-run": func(m *model) { m.logs = logs[:4] },
 		"starting": func(m *model) {
-			m.saved, m.hasPass = "xiaomai-AP", true
+			m.saved, m.hasPass, m.pass, m.storedPass = "xiaomai-AP", true, "xiaomai2026", "xiaomai2026"
 			m.st = hotspot.State{Phase: hotspot.Starting, HasAP: true,
 				Adapter: "WLAN [MediaTek Wi-Fi 6E MT7922] (Up)", AdapterName: "WLAN",
 				Uplink: "以太网", SSID: "xiaomai-AP", Tun: hotspot.TunOff}
 			m.logs = logs[:8]
 		},
 		"failed": func(m *model) {
-			m.saved, m.hasPass = "xiaomai-AP", true
+			m.saved, m.hasPass, m.pass, m.storedPass = "xiaomai-AP", true, "xiaomai2026", "xiaomai2026"
 			m.st = hotspot.State{Phase: hotspot.Off, HasAP: true,
 				LastError: "启动热点失败：45 秒内未进入 On 且实时信号均未命中",
 				Adapter: "WLAN [MediaTek Wi-Fi 6E MT7922] (Up)", AdapterName: "WLAN",

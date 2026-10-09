@@ -145,7 +145,7 @@ try {
                 $out.nothing = $true
                 $out.state = $state
             } else {
-                [void]$mgr.StopTetheringAsync()
+                try { [void]$mgr.StopTetheringAsync() } catch {}
                 $secs = 20
                 if ($req.seconds) { $secs = [int]$req.seconds }
                 $deadline = (Get-Date).AddSeconds($secs)
@@ -154,7 +154,9 @@ try {
                     if ($mgr.TetheringOperationalState.ToString() -ne 'On') { break }
                 }
                 $out.state = $mgr.TetheringOperationalState.ToString()
-                $out.ok = ($out.state -eq 'Off')
+                # The goal is "not running": Off is the clean answer, and a
+                # stale On state machine settling to Unknown counts too.
+                $out.ok = ($out.state -ne 'On')
             }
         }
 

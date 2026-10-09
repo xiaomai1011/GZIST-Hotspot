@@ -81,12 +81,14 @@ func (a *app) ready() {
 		a.log.Printf("读取密码失败: %v", err)
 	}
 	a.m = &model{
-		ssid:      st.Ssid,
-		saved:     st.Ssid,
-		hasPass:   pass != "",
-		insecure:  insecure,
-		autostart: mygo.App.OpenAtLogin(),
-		version:   mygo.App.Version(),
+		ssid:       st.Ssid,
+		pass:       pass,
+		storedPass: pass,
+		saved:      st.Ssid,
+		hasPass:    pass != "",
+		insecure:   insecure,
+		autostart:  mygo.App.OpenAtLogin(),
+		version:    mygo.App.Version(),
 	}
 	a.m.act = actions{
 		Start:        a.start,
@@ -302,7 +304,9 @@ func (a *app) refresh() {
 	a.mgr.Refresh()
 }
 
-// save stores new credentials. Main thread; the keyring work runs aside.
+// save stores new credentials. The passkey field is always filled once a
+// password exists; saving an empty field deletes the passkey. Main
+// thread; the keyring work runs aside.
 func (a *app) save(ssid, pass string) {
 	old := a.m.saved
 	if ssid == "" {
@@ -318,7 +322,10 @@ func (a *app) save(ssid, pass string) {
 	go func() {
 		insecure := a.m.insecure
 		var err error
-		if pass != "" {
+		if pass == "" {
+			a.store.DeletePasskey()
+			insecure = false
+		} else if pass != a.m.storedPass {
 			insecure, err = a.store.SetPasskey(pass)
 		}
 		if err == nil {
@@ -334,7 +341,8 @@ func (a *app) save(ssid, pass string) {
 			a.log.Add("系统凭据管理器不可用，密码以明文（权限 0600）保存在本机")
 		}
 		a.post(func() {
-			a.m.saved, a.m.pass, a.m.hasPass, a.m.insecure = ssid, "", true, insecure
+			a.m.saved, a.m.pass, a.m.storedPass = ssid, pass, pass
+			a.m.hasPass, a.m.insecure = pass != "", insecure
 			a.m.notice = "已保存"
 			a.syncTray()
 		})

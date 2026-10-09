@@ -214,8 +214,10 @@ func TrayIcon(s TrayState, template bool) []byte {
 	r := newRaster(W)
 	outer := StarPoints(16, 17, 15, 0.46, 0)
 	col := map[TrayState]color.RGBA{
-		TrayOff:    {0x8a, 0x8f, 0x98, 0xff},
-		TrayOn:     Band,
+		// Green (Rana's color) so the tray never clashes with the blue
+		// star of the other Go app in the tray.
+		TrayOff:    Rana,
+		TrayOn:     Rana,
 		TrayBusy:   Anon,
 		TrayError:  {0xE0, 0x9A, 0x1E, 0xff},
 	}[s]

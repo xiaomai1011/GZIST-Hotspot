@@ -39,6 +39,7 @@ type model struct {
 	ssid       string // text field
 	pass       string // text field, always filled once a passkey exists
 	storedPass string // what is on disk; the field starts with it
+	showPass   bool   // the eye toggle: true = plain text
 	saved      string // ssid on disk
 	hasPass    bool
 	insecure   bool
@@ -292,13 +293,29 @@ func (m *model) settingsCard(c *ui.Context, t *ui.Theme) {
 	card(c, t).Children(func() {
 		sectionTitle(c, t, "热点设置", colAnon)
 		ui.TextInput(c, &m.ssid).Label("热点名称").Placeholder("热点名称").FillWidth()
-		pw := ui.TextInput(c, &m.pass).Label("密码").Password().FillWidth()
+		placeholder := "至少 8 位"
 		if m.hasPass {
-			pw.Placeholder("清空后保存 = 删除密码")
-		} else {
-			pw.Placeholder("至少 8 位")
+			placeholder = "清空后保存 = 删除密码"
 		}
-		submitted := pw.Submitted()
+		var submitted bool
+		if m.showPass {
+			pw := ui.TextInput(c, &m.pass).Label("密码").FillWidth()
+			pw.Placeholder(placeholder)
+			submitted = pw.Submitted()
+		} else {
+			pw := ui.TextInput(c, &m.pass).Label("密码").Password().FillWidth()
+			pw.Placeholder(placeholder)
+			submitted = pw.Submitted()
+		}
+		eye := "👁 显示"
+		if m.showPass {
+			eye = "🙈 隐藏"
+		}
+		ui.Row(c).Gap(8).AlignItems(ui.Center).FillWidth().Children(func() {
+			if ui.Button(c, eye).FontSize(12).Clicked() {
+				m.showPass = !m.showPass
+			}
+		})
 		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
 			msg := m.notice
 			if msg == "" && m.insecure {

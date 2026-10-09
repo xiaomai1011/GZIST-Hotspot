@@ -4,3 +4,7 @@ Thumbs.db
 desktop.ini
 # personal hotspot credentials - NEVER commit
 hotspot_config.json
+
+# go / mygo build output
+build/
+*.test

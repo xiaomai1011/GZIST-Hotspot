@@ -1,0 +1,7 @@
+{
+  "name": "GZIST Hotspot",
+  "identifier": "io.github.xiaomai1011.gzist-hotspot",
+  "version": "2.0.0",
+  "copyright": "Copyright © 2026 xiaomai1011. MIT License.",
+  "out": "build"
+}

@@ -236,11 +236,9 @@ func TrayIcon(s TrayState, template bool) []byte {
 		r.fill(roundRect(14.6, 10, 2.8, 6.5, 1.2), src)
 		r.fill(circle(16, 20.4, 1.7), src)
 	default:
+		// A plain filled star, like the other app's tray icon — the
+		// color alone tells the two apart.
 		r.fill(poly(outer), src)
-		if !template {
-			waves := image.NewUniform(color.RGBA{255, 255, 255, 0xff})
-			wifiWaves(r, 16, 15.5, 6.5, 4.2, 1.6, waves)
-		}
 	}
 	return encode(r.img)
 }
